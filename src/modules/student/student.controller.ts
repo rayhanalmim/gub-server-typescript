@@ -20,6 +20,26 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+const getStudents = async (req: Request, res: Response) => {
+  try {
+    const student = req.body;
+
+    const result = await StudentServices.getStudentFromDB();
+    res.status(200).json({
+      success: true,
+      message: "student get successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
+    });
+  }
+};
+
 export const StudentController = {
   createProduct,
+  getStudents,
 };
