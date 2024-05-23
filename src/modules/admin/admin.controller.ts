@@ -37,7 +37,35 @@ const getAccess = async (req: Request, res: Response) => {
   }
 };
 
+const getPermission = async (req: Request, res: Response) => {
+  try {
+    const response = await AdminServices.getLoginIntoDB();
+    res.send(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
+    });
+  }
+};
+
+const getLogOut = async (req: Request, res: Response) => {
+  try {
+    const response = await AdminServices.getLogOutFromDB();
+    res.send(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
+    });
+  }
+};
+
 export const AdminController = {
   checkLoginStatus,
   getAccess,
+  getPermission,
+  getLogOut,
 };

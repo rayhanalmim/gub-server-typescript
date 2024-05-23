@@ -12,8 +12,24 @@ const checkGetAccess = async (email: string, password: string) => {
   });
   return isTrue;
 };
+const getLoginIntoDB = async () => {
+  const result = AdminModel.updateOne(
+    { key: "password" },
+    { $set: { isLogin: true } }
+  );
+  return result;
+};
+const getLogOutFromDB = async () => {
+  const result = AdminModel.updateOne(
+    { key: "password" },
+    { $set: { isLogin: false } }
+  );
+  return result;
+};
 
 export const AdminServices = {
   checkLoginStatusIntoDB,
   checkGetAccess,
+  getLoginIntoDB,
+  getLogOutFromDB,
 };
