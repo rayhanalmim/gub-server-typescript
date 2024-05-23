@@ -1,15 +1,33 @@
 import { Request, Response } from "express";
+import { AdminServices } from "./admin.service";
 
-const createProduct = async (req: Request, res: Response) => {
+const checkLoginStatus = async (req: Request, res: Response) => {
   try {
-    const student = req.body;
-
-    // const result = await StudentServices.createStudentIntoDB(student);
-    res.status(200).json({
-      success: true,
-      message: "student created successfully!",
-      //   data: result,
+    const response = await AdminServices.checkLoginStatusIntoDB();
+    res.send(response);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
     });
+  }
+};
+
+const getAccess = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.query;
+    console.log(email, password);
+    const isTrue = await AdminServices.checkGetAccess(
+      email as string,
+      password as string
+    );
+
+    if (isTrue) {
+      return res.status(200).send(isTrue);
+    } else {
+      return res.status(201).send({ message: "admin not found" });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -20,5 +38,6 @@ const createProduct = async (req: Request, res: Response) => {
 };
 
 export const AdminController = {
-  createProduct,
+  checkLoginStatus,
+  getAccess,
 };

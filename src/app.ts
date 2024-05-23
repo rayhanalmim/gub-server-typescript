@@ -1,12 +1,14 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { StudentRoute } from "./modules/student/student.route";
+import { AdminRoute } from "./modules/admin/admin.route";
 const app: Application = express();
 
 app.use(express.json());
 app.use(cors());
 
 app.use("/api", StudentRoute);
+app.use("/api", AdminRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
