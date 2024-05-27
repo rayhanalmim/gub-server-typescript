@@ -1,13 +1,24 @@
 import { ExtendedStudent } from "./student.interface";
 import StudentModel from "./student.model";
 
-const createStudentIntoDB = async (product: ExtendedStudent) => {
-  const result = await StudentModel.create(product);
+class studentClass {
+  student: object;
+  constructor(studentData: object) {
+    this.student = studentData;
+  }
+  public async pushIntoDB() {
+    await StudentModel.create(this.student);
+  }
+}
+
+const createStudentIntoDB = async (student: ExtendedStudent) => {
+  const createStudent = new studentClass(student);
+  const result = await createStudent.pushIntoDB();
   return result;
 };
 
 const getStudentFromDB = async () => {
-  const student = await StudentModel.find({}, { _id: 0 });
+  const student = await StudentModel.find();
   return student;
 };
 
