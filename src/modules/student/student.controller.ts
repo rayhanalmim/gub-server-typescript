@@ -22,8 +22,6 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getStudents = async (req: Request, res: Response) => {
   try {
-    const student = req.body;
-
     const result = await StudentServices.getStudentFromDB();
     res.status(200).json({
       success: true,
