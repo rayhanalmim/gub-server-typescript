@@ -2,7 +2,6 @@ import AdminModel from "./admin.model";
 
 const checkLoginStatusIntoDB = async () => {
   const result = await AdminModel.find({ isLogin: true });
-  console.log(result);
   return result;
 };
 

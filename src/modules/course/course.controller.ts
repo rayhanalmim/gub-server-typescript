@@ -36,7 +36,45 @@ const getCourse = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleCourse = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.query;
+    const result = await CourseServices.getSingleCourseFromDB(id as string);
+    res.status(200).json({
+      success: true,
+      message: "course get successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
+    });
+  }
+};
+
+const deleteCourse = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.query;
+    const result = await CourseServices.deleteSingleCourseFromDB(id as string);
+    res.status(200).json({
+      success: true,
+      message: "course deleted successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
+      Error: error,
+    });
+  }
+};
+
 export const CourseController = {
   createCourse,
   getCourse,
+  getSingleCourse,
+  deleteCourse,
 };
