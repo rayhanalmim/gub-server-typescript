@@ -2,10 +2,10 @@ import { Schema, model } from "mongoose";
 
 // Define the schema for the course
 const courseSchema = new Schema({
-  course_name: { type: String, required: true },
-  course_code: { type: String, required: true, unique: true },
-  select_section: { type: String, required: true },
-  total_class: { type: Number, required: true },
+  courseName: { type: String, required: true },
+  courseCode: { type: String, required: true, unique: true },
+  section: { type: String, required: true },
+  totalClass: { type: Number, required: true },
   enrolled_student: [{ type: String }], // Array of strings representing student IDs
 });
 

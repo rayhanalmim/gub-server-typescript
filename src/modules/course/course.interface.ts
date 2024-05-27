@@ -1,7 +1,7 @@
 export interface Course {
-  course_name: string;
-  course_code: string;
-  select_section: string;
-  total_class: number;
+  courseName: string;
+  courseCode: string;
+  section: string;
+  totalClass: number;
   enrolled_student: string[];
 }
