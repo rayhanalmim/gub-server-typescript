@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
   socket.on("joinGame", (gameId) => {
-    if (!rooms[gameId]) {
+    if (!rooms[gameId] as any) {
       rooms[gameId] = [];
     }
 
