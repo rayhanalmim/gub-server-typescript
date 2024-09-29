@@ -5,6 +5,78 @@ import { AdminRoute } from "./modules/admin/admin.route";
 import { CourseRoute } from "./modules/course/course.route";
 import { userRoute } from "./modules/users/user.route";
 const app: Application = express();
+;
+import http from "http";
+import { Server } from "socket.io";
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+// To store players in rooms
+const rooms = {};
+
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// Example route
+app.get("/", (req, res) => {
+  res.send("Server is running.");
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("joinGame", (gameId) => {
+    if (!rooms[gameId]) {
+      rooms[gameId] = [];
+    }
+
+    // Add player to the room if less than 2 players are connected
+    if (rooms[gameId].length < 2) {
+      rooms[gameId].push(socket.id);
+      socket.join(gameId);
+
+      console.log(
+        `User ${socket.id} joined game ${gameId}. Players in room: ${rooms[gameId].length}`
+      );
+
+      // Notify the players in the room
+      io.to(gameId).emit("playerJoined", rooms[gameId].length);
+
+      // Check if the room now has 2 players
+      if (rooms[gameId].length === 2) {
+        io.to(gameId).emit("startGame", { players: rooms[gameId] });
+      }
+    } else {
+      socket.emit("roomFull", "This room is full. Try another game.");
+    }
+  });
+
+  socket.on("diceRolled", ({ gameId, player, value }) => {
+    io.to(gameId).emit("updateDiceState", { player, value });
+  });
+
+  // Handle user disconnecting
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+
+    for (const gameId in rooms) {
+      rooms[gameId] = rooms[gameId].filter((id) => id !== socket.id);
+      io.to(gameId).emit("playerLeft", rooms[gameId].length);
+    }
+  });
+});
+
+server.listen(4000, () => {
+  console.log("Server is running on port 4000");
+});
+
 
 app.use(express.json());
 app.use(cors());
