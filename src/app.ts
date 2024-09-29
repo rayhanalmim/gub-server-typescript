@@ -1,14 +1,18 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+
+// Import routes
 import { StudentRoute } from "./modules/student/student.route";
 import { AdminRoute } from "./modules/admin/admin.route";
 import { CourseRoute } from "./modules/course/course.route";
 import { userRoute } from "./modules/users/user.route";
-const app: Application = express();
-;
-import http from "http";
-import { Server } from "socket.io";
 
+// Initialize the Express application
+const app: Application = express();
+
+// Create HTTP server and attach Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -17,23 +21,27 @@ const io = new Server(server, {
   },
 });
 
-// To store players in rooms
-const rooms = {};
+// Define interface for rooms
+interface Rooms {
+  [gameId: string]: string[]; // Array of socket IDs
+}
+const rooms: Rooms = {};
 
 // Middleware
 app.use(express.json());
 app.use(cors());
 
 // Example route
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Server is running.");
 });
 
+// Socket.IO connection handler
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("joinGame", (gameId) => {
-    if (!rooms[gameId] as any) {
+  socket.on("joinGame", (gameId: string) => {
+    if (!rooms[gameId]) {
       rooms[gameId] = [];
     }
 
@@ -73,24 +81,16 @@ io.on("connection", (socket) => {
   });
 });
 
+// Start the server
 server.listen(4000, () => {
   console.log("Server is running on port 4000");
 });
 
-
-app.use(express.json());
-app.use(cors());
-
+// API Routes
 app.use("/api", StudentRoute);
 app.use("/api", AdminRoute);
 app.use("/api", CourseRoute);
-app.use("/api", StudentRoute);
 app.use("/api", userRoute);
-
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
-});
 
 // Not Found Route Handler
 app.use((req: Request, res: Response) => {
@@ -100,7 +100,8 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-app.use((err: any, req: Request, res: Response) => {
+// Error Handling Middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
